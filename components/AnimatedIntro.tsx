@@ -83,6 +83,7 @@ const AnimatedIntro = () => {
   }, [currentIndex]);
 
   // STYLES
+  //  Map a value from a range of numbers to a range of colors to colour the text
   const textStyle = useAnimatedStyle(() => {
     return {
       color: interpolateColor(
@@ -106,6 +107,7 @@ const AnimatedIntro = () => {
     };
   }, [currentIndex, currentX]);
 
+  //  Map a value from a range of numbers to a range of colors to colour the ball
   const ballStyle = useAnimatedStyle(() => {
     return {
       backgroundColor: interpolateColor(
@@ -121,6 +123,7 @@ const AnimatedIntro = () => {
     };
   });
 
+  //  Map a value from a range of numbers to a range of colors to colour the mask covering the text
   const mask = useAnimatedStyle(
     () => ({
       backgroundColor: interpolateColor(
