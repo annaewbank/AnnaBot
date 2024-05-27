@@ -1,5 +1,6 @@
 import Colors from '@/constants/Colors';
 import { defaultStyles } from '@/constants/Styles';
+import { useSignIn, useSignUp } from '@clerk/clerk-expo';
 import { useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import {
@@ -12,20 +13,69 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 
 const Page = () => {
   // Extract type from the route object ('login' or 'register')
   const { type } = useLocalSearchParams<{ type: string }>();
 
-  // States:
+  // STATES START
   const [loading, setLoading] = useState(false);
   const [emailAddress, setEmailAddress] = useState('');
   const [password, setPassword] = useState('');
+  // STATES END
 
-  // Functions:
-  const onSignUpPress = async () => {};
-  const onSignInPress = async () => {};
+  const {
+    signUp,
+    isLoaded: signUpIsLoaded,
+    setActive: signUpSetActive,
+  } = useSignUp();
+  const { signIn, isLoaded, setActive } = useSignIn();
+
+  // FUNCTIONS START
+  const onSignUpPress = async () => {
+    if (!signUpIsLoaded) return;
+
+    setLoading(true);
+
+    try {
+      // Sign up the user on Clerk
+      const result = await signUp.create({ emailAddress, password });
+      console.log('onSignUpPress result ', result);
+
+      // Set the active session
+      signUpSetActive({ session: result.createdSessionId });
+    } catch (error: any) {
+      Alert.alert(error.errors[0].message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onSignInPress = async () => {
+    if (!isLoaded) return;
+
+    setLoading(true);
+
+    try {
+      // Sign up the user
+      const result = await signIn.create({
+        identifier: emailAddress,
+        password,
+      });
+      console.log('onSignInPress result ', result);
+
+      // Set the active session
+      setActive({ session: result.createdSessionId });
+    } catch (error: any) {
+      console.error('onSignUpPress error: ', error);
+      Alert.alert(error.errors[0].message);
+    } finally {
+      setLoading(false);
+    }
+  };
+  // FUNCTIONS END
 
   return (
     <KeyboardAvoidingView
