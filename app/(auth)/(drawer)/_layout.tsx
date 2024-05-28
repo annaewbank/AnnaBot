@@ -13,7 +13,7 @@ const Layout = () => {
         name="(chat)/new"
         getId={() => Math.random().toString()}
         options={{
-          title: 'New Chat',
+          title: 'AnnaBot',
           drawerIcon: () => (
             <View style={[styles.item, { backgroundColor: '#000' }]}>
               <Image
@@ -36,6 +36,21 @@ const Layout = () => {
           ),
         }}
       />
+
+      <Drawer.Screen
+        name="dalle"
+        options={{
+          title: 'DALL·E',
+          drawerIcon: () => (
+            <View style={[styles.item, { backgroundColor: '#000' }]}>
+              <Image
+                source={require('@/assets/images/dalle.png')}
+                style={styles.dallEImage}
+              />
+            </View>
+          ),
+        }}
+      />
     </Drawer>
   );
 };
@@ -49,6 +64,11 @@ const styles = StyleSheet.create({
     margin: 6,
     width: 16,
     height: 16,
+  },
+  dallEImage: {
+    width: 28,
+    height: 28,
+    resizeMode: 'cover',
   },
 });
 
