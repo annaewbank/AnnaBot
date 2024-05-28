@@ -1,14 +1,47 @@
-import { View, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  useWindowDimensions,
+} from 'react-native';
 import { Drawer } from 'expo-router/drawer';
-import { Link } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { Link, useNavigation } from 'expo-router';
+import { FontAwesome6, Ionicons } from '@expo/vector-icons';
 import Colors from '@/constants/Colors';
+import { DrawerActions } from '@react-navigation/native';
 
 // This file defines the drawer content
 
 const Layout = () => {
+  // Hook to open the drawer using a custom icon
+  const navigation = useNavigation();
+
+  // Hook to calculate window dimensions
+  // Used for drawer width
+  const dimensions = useWindowDimensions();
+
   return (
-    <Drawer>
+    <Drawer
+      screenOptions={{
+        headerLeft: () => (
+          <TouchableOpacity
+            onPress={() => navigation.dispatch(DrawerActions.openDrawer)}
+            style={{ marginLeft: 16 }}
+          >
+            <FontAwesome6 name="grip-lines" size={20} color={Colors.grey} />
+          </TouchableOpacity>
+        ),
+        headerShadowVisible: false,
+        drawerActiveBackgroundColor: Colors.selected,
+        drawerActiveTintColor: '#000',
+        drawerInactiveTintColor: '#000',
+        overlayColor: 'rgba(0, 0, 0, 0.2)',
+        drawerItemStyle: { borderRadius: 12 },
+        drawerLabelStyle: { marginLeft: -20 },
+        drawerStyle: { width: dimensions.width * 0.85 },
+      }}
+    >
       <Drawer.Screen
         name="(chat)/new"
         getId={() => Math.random().toString()}
@@ -47,6 +80,29 @@ const Layout = () => {
                 source={require('@/assets/images/dalle.png')}
                 style={styles.dallEImage}
               />
+            </View>
+          ),
+        }}
+      />
+
+      <Drawer.Screen
+        name="explore"
+        options={{
+          title: 'Explore GPTs',
+          drawerIcon: () => (
+            <View
+              style={[
+                styles.item,
+                {
+                  backgroundColor: '#fff',
+                  width: 28,
+                  height: 28,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                },
+              ]}
+            >
+              <Ionicons name="apps-outline" size={18} color="#000" />
             </View>
           ),
         }}
