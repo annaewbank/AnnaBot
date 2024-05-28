@@ -71,11 +71,11 @@ const InitialLayout = () => {
     if (isSignedIn && !inAuthGroup) {
       // Bring the user to the auth group
       router.replace('/(auth)/(drawer)/(chat)/new');
-    } else if (!isSignedIn && inAuthGroup) {
+    } else if (!isSignedIn) {
       // Kick the user out
       router.replace('/');
     }
-  });
+  }, [isSignedIn]);
   // USE EFFECTS END
 
   // If not loaded, Slot will render the current child route
