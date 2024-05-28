@@ -4,14 +4,55 @@ import {
   Image,
   TouchableOpacity,
   useWindowDimensions,
+  Text,
 } from 'react-native';
 import { Drawer } from 'expo-router/drawer';
 import { Link, useNavigation } from 'expo-router';
 import { FontAwesome6, Ionicons } from '@expo/vector-icons';
 import Colors from '@/constants/Colors';
 import { DrawerActions } from '@react-navigation/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import {
+  DrawerContentScrollView,
+  DrawerItemList,
+} from '@react-navigation/drawer';
+import { TextInput } from 'react-native-gesture-handler';
 
 // This file defines the drawer content
+
+// Function to enable to addition of custom drawer items
+// New drawer items: search bar and user/settings
+export const CustomDrawerContent = (props: any) => {
+  const { top, bottom } = useSafeAreaInsets();
+
+  return (
+    <View style={{ flex: 1, marginTop: top }}>
+      <View style={{ backgroundColor: '#fff', paddingBottom: 16 }}>
+        <View style={styles.searchSection}>
+          <Ionicons
+            name="search"
+            size={20}
+            color={Colors.greyLight}
+            style={styles.searchIcon}
+          />
+          <TextInput
+            placeholder="Search"
+            underlineColorAndroid={'transparent'}
+            style={styles.input}
+          />
+        </View>
+      </View>
+      {/* Reshow original drawer content (AnnaBot, DALL·E, Explore GPTs) */}
+      <DrawerContentScrollView
+        {...props}
+        contentContainerStyle={{ paddingTop: 0 }}
+      >
+        <DrawerItemList {...props} />
+      </DrawerContentScrollView>
+      {/* Add custom drawer items here */}
+    </View>
+  );
+};
 
 const Layout = () => {
   // Hook to open the drawer using a custom icon
@@ -23,6 +64,7 @@ const Layout = () => {
 
   return (
     <Drawer
+      drawerContent={CustomDrawerContent}
       screenOptions={{
         headerLeft: () => (
           <TouchableOpacity
@@ -125,6 +167,20 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     resizeMode: 'cover',
+  },
+  searchSection: {
+    marginHorizontal: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.input,
+    borderRadius: 10,
+    height: 34,
+  },
+  searchIcon: { padding: 6 },
+  input: {
+    flex: 1,
+    color: '#424242',
+    paddingRight: 8,
   },
 });
 
