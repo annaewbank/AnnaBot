@@ -27,6 +27,7 @@ export const CustomDrawerContent = (props: any) => {
 
   return (
     <View style={{ flex: 1, marginTop: top }}>
+      {/* Add search bar */}
       <View style={{ backgroundColor: '#fff', paddingBottom: 16 }}>
         <View style={styles.searchSection}>
           <Ionicons
@@ -42,6 +43,7 @@ export const CustomDrawerContent = (props: any) => {
           />
         </View>
       </View>
+
       {/* Reshow original drawer content (AnnaBot, DALL·E, Explore GPTs) */}
       <DrawerContentScrollView
         {...props}
@@ -49,7 +51,26 @@ export const CustomDrawerContent = (props: any) => {
       >
         <DrawerItemList {...props} />
       </DrawerContentScrollView>
-      {/* Add custom drawer items here */}
+
+      {/* Add user/settings */}
+      <View style={{ padding: 16, paddingBottom: bottom }}>
+        <Link href={'/(auth)/(modal)/settings'} asChild>
+          <TouchableOpacity style={styles.footer}>
+            <Image
+              source={{
+                uri: 'https://global.discourse-cdn.com/business6/uploads/zoomdeveloper/original/3X/b/3/b383df5a391544eba871146584fe42a3c0d08489.png',
+              }}
+              style={styles.avatar}
+            />
+            <Text style={styles.userName}>User Name</Text>
+            <Ionicons
+              name="ellipsis-horizontal"
+              size={24}
+              color={Colors.greyLight}
+            />
+          </TouchableOpacity>
+        </Link>
+      </View>
     </View>
   );
 };
@@ -182,6 +203,9 @@ const styles = StyleSheet.create({
     color: '#424242',
     paddingRight: 8,
   },
+  footer: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  avatar: { width: 40, height: 40, borderRadius: 10 },
+  userName: { flex: 1, fontSize: 16, fontWeight: '600' },
 });
 
 export default Layout;
