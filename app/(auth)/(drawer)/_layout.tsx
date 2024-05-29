@@ -136,7 +136,7 @@ const Layout = () => {
       <Drawer.Screen
         name="dalle"
         options={{
-          title: 'DALL·E',
+          title: 'ANNA·E',
           drawerIcon: () => (
             <View style={[styles.item, { backgroundColor: '#000' }]}>
               <Image
@@ -151,7 +151,7 @@ const Layout = () => {
       <Drawer.Screen
         name="explore"
         options={{
-          title: 'Explore GPTs',
+          title: 'Explore Bots',
           drawerIcon: () => (
             <View
               style={[
