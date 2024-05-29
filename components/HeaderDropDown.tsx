@@ -3,7 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { View, Text } from 'react-native';
 import * as DropDownMenu from 'zeego/dropdown-menu';
 
-// Define types:
+// Define prop types:
 export type HeaderDropDownProps = {
   title: string;
   selected?: string;
