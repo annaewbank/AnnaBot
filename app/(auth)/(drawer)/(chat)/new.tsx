@@ -45,19 +45,20 @@ const Page = () => {
       <View style={{ flex: 1 }}>
         <Text>DUMMY CONTENT</Text>
         <Button title="Sign out" onPress={() => signOut()} />
-        <ScrollView>
+        {/* <ScrollView>
           {Array.from({ length: 100 }).map((_, index) => (
             <Text key={index}>{index}</Text>
           ))}
-        </ScrollView>
+        </ScrollView> */}
       </View>
 
       <KeyboardAvoidingView
         keyboardVerticalOffset={70}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        // styling needed for blur to work correctly
         style={{ position: 'absolute', bottom: 0, left: 0, width: '100%' }}
       >
-        <MessageInput onShouldSendMessage={getCompletion} />
+        <MessageInput onShouldSend={getCompletion} />
       </KeyboardAvoidingView>
     </View>
   );
