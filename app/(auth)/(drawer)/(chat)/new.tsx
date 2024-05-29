@@ -1,4 +1,6 @@
+import { Message } from '@/app/utils/Interfaces';
 import HeaderDropDown from '@/components/HeaderDropDown';
+import MessageIdeas from '@/components/MessageIdeas';
 import MessageInput from '@/components/MessageInput';
 import { defaultStyles } from '@/constants/Styles';
 import { useAuth } from '@clerk/clerk-expo';
@@ -19,6 +21,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 const Page = () => {
   const { signOut } = useAuth();
   const [botVersion, setBotVersion] = useState('3.5');
+  const [messages, setMessages] = useState<Message[]>([]);
 
   const getCompletion = async (message: string) => {
     console.log('Getting completion for: ', message);
@@ -43,13 +46,7 @@ const Page = () => {
         }}
       />
       <View style={{ flex: 1 }}>
-        <Text>DUMMY CONTENT</Text>
         <Button title="Sign out" onPress={() => signOut()} />
-        {/* <ScrollView>
-          {Array.from({ length: 100 }).map((_, index) => (
-            <Text key={index}>{index}</Text>
-          ))}
-        </ScrollView> */}
       </View>
 
       <KeyboardAvoidingView
@@ -58,6 +55,7 @@ const Page = () => {
         // styling needed for blur to work correctly
         style={{ position: 'absolute', bottom: 0, left: 0, width: '100%' }}
       >
+        {messages.length === 0 && <MessageIdeas onSelectCard={getCompletion} />}
         <MessageInput onShouldSend={getCompletion} />
       </KeyboardAvoidingView>
     </View>
