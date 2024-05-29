@@ -1,27 +1,38 @@
-import { Message } from '@/app/utils/Interfaces';
+import { Message, Role } from '@/app/utils/Interfaces';
 import HeaderDropDown from '@/components/HeaderDropDown';
 import MessageIdeas from '@/components/MessageIdeas';
 import MessageInput from '@/components/MessageInput';
 import { defaultStyles } from '@/constants/Styles';
-import { useAuth } from '@clerk/clerk-expo';
 import { Stack } from 'expo-router';
 import { useState } from 'react';
 import {
   View,
-  Button,
-  Text,
   KeyboardAvoidingView,
   Platform,
+  StyleSheet,
+  Image,
 } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
+import { FlashList } from '@shopify/flash-list';
+import ChatMessage from '@/components/ChatMessage';
 
 // Everything inside (auth) is protected by Clerk
 // Check occurs in root _layout.tsx useEffect
 
+const DUMMY_MESSAGES: Message[] = [
+  {
+    content: 'Hello, how can I help you today?',
+    role: Role.Bot,
+  },
+  {
+    content:
+      'I need help with my React Native app. Please can you explain how stack navigation works?',
+    role: Role.User,
+  },
+];
+
 const Page = () => {
-  const { signOut } = useAuth();
   const [botVersion, setBotVersion] = useState('3.5');
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>(DUMMY_MESSAGES);
 
   const getCompletion = async (message: string) => {
     console.log('Getting completion for: ', message);
@@ -46,7 +57,21 @@ const Page = () => {
         }}
       />
       <View style={{ flex: 1 }}>
-        <Button title="Sign out" onPress={() => signOut()} />
+        {messages.length === 0 && (
+          <View style={[styles.logoContainer, { marginTop: 100 }]}>
+            <Image
+              source={require('@/assets/images/logo-white.png')}
+              style={styles.logo}
+            />
+          </View>
+        )}
+        <FlashList
+          data={messages}
+          renderItem={({ item }) => <ChatMessage {...item} />}
+          estimatedItemSize={400}
+          contentContainerStyle={{ paddingTop: 30, paddingBottom: 150 }}
+          keyboardDismissMode="on-drag"
+        />
       </View>
 
       <KeyboardAvoidingView
@@ -61,5 +86,22 @@ const Page = () => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  logoContainer: {
+    width: 50,
+    height: 50,
+    backgroundColor: '#000',
+    alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 25,
+  },
+  logo: {
+    height: 30,
+    width: 30,
+    resizeMode: 'cover',
+  },
+});
 
 export default Page;

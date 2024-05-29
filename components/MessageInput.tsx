@@ -90,7 +90,7 @@ const MessageInput = ({ onShouldSend }: MessageInputProps) => {
 
   return (
     <BlurView
-      intensity={70}
+      intensity={90}
       tint="extraLight"
       style={{ paddingBottom: bottom, paddingTop: 10 }}
     >
