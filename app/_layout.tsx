@@ -65,6 +65,8 @@ const InitialLayout = () => {
 
     const inAuthGroup = segments[0] === '(auth)';
 
+    console.log('segments', segments);
+    // e.g. segments: ["(auth)", "(drawer)", "(chat)", "new"]
     console.log('isSignedIn', isSignedIn);
     console.log('inAuthGroup', inAuthGroup);
 
