@@ -3,7 +3,7 @@ import HeaderDropDown from '@/components/HeaderDropDown';
 import MessageIdeas from '@/components/MessageIdeas';
 import MessageInput from '@/components/MessageInput';
 import { defaultStyles } from '@/constants/Styles';
-import { Stack } from 'expo-router';
+import { Redirect, Stack } from 'expo-router';
 import { useState } from 'react';
 import {
   View,
@@ -14,6 +14,8 @@ import {
 } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import ChatMessage from '@/components/ChatMessage';
+import { useMMKVString } from 'react-native-mmkv';
+import { Storage } from '@/app/utils/Storage';
 
 // Everything inside (auth) is protected by Clerk
 // Check occurs in root _layout.tsx useEffect
@@ -31,12 +33,31 @@ const DUMMY_MESSAGES: Message[] = [
 ];
 
 const Page = () => {
-  const [botVersion, setBotVersion] = useState('3.5');
   const [messages, setMessages] = useState<Message[]>(DUMMY_MESSAGES);
 
   const getCompletion = async (message: string) => {
     console.log('Getting completion for: ', message);
   };
+
+  // MMKV / API Check Start
+  const [key, setKey] = useMMKVString('apiKey', Storage);
+  const [organization, setOrganization] = useMMKVString('org', Storage);
+  const [botVersion, setBotVersion] = useMMKVString('botVersion', Storage);
+
+  if (!key || key === '' || !organization || organization === '') {
+    return <Redirect href={'/(auth)/(modal)/settings'} />;
+  }
+
+  // MMKV Storage check:
+  // const keys = Storage.getAllKeys();
+  // keys.forEach((key) => {
+  //   const value =
+  //     Storage.getString(key) ||
+  //     Storage.getBoolean(key) ||
+  //     Storage.getNumber(key);
+  //   console.log(`Key: ${key}, Value: ${value}`);
+  // });
+  // MMKV / API Check End
 
   return (
     <View style={defaultStyles.pageContainer}>
