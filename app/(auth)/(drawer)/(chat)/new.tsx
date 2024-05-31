@@ -4,7 +4,7 @@ import MessageIdeas from '@/components/MessageIdeas';
 import MessageInput from '@/components/MessageInput';
 import { defaultStyles } from '@/constants/Styles';
 import { Redirect, Stack } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   View,
   KeyboardAvoidingView,
@@ -16,6 +16,7 @@ import { FlashList } from '@shopify/flash-list';
 import ChatMessage from '@/components/ChatMessage';
 import { useMMKVString } from 'react-native-mmkv';
 import { Storage } from '@/app/utils/Storage';
+import OpenAI from 'react-native-openai';
 
 // Everything inside (auth) is protected by Clerk
 // Check occurs in root _layout.tsx useEffect
@@ -33,11 +34,7 @@ const DUMMY_MESSAGES: Message[] = [
 ];
 
 const Page = () => {
-  const [messages, setMessages] = useState<Message[]>(DUMMY_MESSAGES);
-
-  const getCompletion = async (message: string) => {
-    console.log('Getting completion for: ', message);
-  };
+  const [messages, setMessages] = useState<Message[]>([]);
 
   // MMKV / API Check Start
   const [key, setKey] = useMMKVString('apiKey', Storage);
@@ -49,15 +46,77 @@ const Page = () => {
   }
 
   // MMKV Storage check:
-  // const keys = Storage.getAllKeys();
-  // keys.forEach((key) => {
-  //   const value =
-  //     Storage.getString(key) ||
-  //     Storage.getBoolean(key) ||
-  //     Storage.getNumber(key);
-  //   console.log(`Key: ${key}, Value: ${value}`);
-  // });
+  const keys = Storage.getAllKeys();
+  keys.forEach((key) => {
+    const value =
+      Storage.getString(key) ||
+      Storage.getBoolean(key) ||
+      Storage.getNumber(key);
+    console.log(`Key: ${key}, Value: ${value}`);
+  });
   // MMKV / API Check End
+
+  // OpenAI Start
+  const openAI = useMemo(() => new OpenAI({ apiKey: key, organization }), []);
+
+  const getCompletion = async (message: string) => {
+    console.log('Getting completion for: ', message);
+
+    if (messages.length === 0) {
+      // Create chat and store in DB
+    }
+
+    // Add user message to chat
+    // Add blank bot message to be filled with streaming result
+    setMessages([
+      ...messages,
+      { content: message, role: Role.User },
+      { content: '', role: Role.Bot },
+    ]);
+
+    openAI.chat.stream({
+      messages: [
+        {
+          role: 'user',
+          content: message,
+        },
+      ],
+      model: botVersion === '4' ? 'gpt-4' : 'gpt-3.5-turbo',
+    });
+  };
+
+  useEffect(() => {
+    const handleMessage = (payload: any) => {
+      console.log('Received message: ', payload);
+
+      // Update messages array with bot response:
+      setMessages((messages) => {
+        const newMessage = payload.choices[0].delta.content;
+
+        // If there is a new message, update empty bot message (last index)
+        if (newMessage) {
+          messages[messages.length - 1].content += newMessage;
+          return [...messages];
+        }
+
+        // If end of stream, save to DB
+        if (payload.choices[0]?.finishReadson) {
+          console.log('End of stream');
+        }
+
+        return messages;
+      });
+    };
+
+    // When a message is received, use handleMessage
+    openAI.chat.addListener('onChatMessageReceived', handleMessage);
+
+    // Clean-up
+    return () => {
+      openAI.chat.removeListener('onChatMessageReceived');
+    };
+  }, [openAI]);
+  // OpenAI End
 
   return (
     <View style={defaultStyles.pageContainer}>
