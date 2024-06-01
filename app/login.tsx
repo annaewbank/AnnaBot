@@ -42,7 +42,7 @@ const Page = () => {
     try {
       // Sign up the user on Clerk
       const result = await signUp.create({ emailAddress, password });
-      console.log('onSignUpPress result ', result);
+      // console.log('onSignUpPress result ', result);
 
       // Set the active session
       signUpSetActive({ session: result.createdSessionId });
@@ -64,7 +64,7 @@ const Page = () => {
         identifier: emailAddress,
         password,
       });
-      console.log('onSignInPress result ', result);
+      // console.log('onSignInPress result ', result);
 
       // Set the active session
       setActive({ session: result.createdSessionId });

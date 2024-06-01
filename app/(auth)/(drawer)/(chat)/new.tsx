@@ -46,22 +46,20 @@ const Page = () => {
   }
 
   // MMKV Storage check:
-  const keys = Storage.getAllKeys();
-  keys.forEach((key) => {
-    const value =
-      Storage.getString(key) ||
-      Storage.getBoolean(key) ||
-      Storage.getNumber(key);
-    console.log(`Key: ${key}, Value: ${value}`);
-  });
+  // const keys = Storage.getAllKeys();
+  // keys.forEach((key) => {
+  //   const value =
+  //     Storage.getString(key) ||
+  //     Storage.getBoolean(key) ||
+  //     Storage.getNumber(key);
+  //   console.log(`Key: ${key}, Value: ${value}`);
+  // });
   // MMKV / API Check End
 
   // OpenAI Start
   const openAI = useMemo(() => new OpenAI({ apiKey: key, organization }), []);
 
   const getCompletion = async (message: string) => {
-    console.log('Getting completion for: ', message);
-
     if (messages.length === 0) {
       // Create chat and store in DB
     }
@@ -87,8 +85,6 @@ const Page = () => {
 
   useEffect(() => {
     const handleMessage = (payload: any) => {
-      console.log('Received message: ', payload);
-
       // Update messages array with bot response:
       setMessages((messages) => {
         const newMessage = payload.choices[0].delta.content;
