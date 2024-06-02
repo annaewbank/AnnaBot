@@ -1,3 +1,8 @@
+import {
+  copyImageToClipboard,
+  downloadAndSaveImage,
+  shareImage,
+} from '@/app/utils/ImageOptions';
 import { Message, Role } from '@/app/utils/Interfaces';
 import Colors from '@/constants/Colors';
 import {
@@ -22,21 +27,21 @@ const ChatMessage = ({
       title: 'Copy',
       systemIcon: 'doc.on.doc',
       action: () => {
-        console.log('Copied!');
+        copyImageToClipboard(imageUrl!);
       },
     },
     {
       title: 'Save to Photos',
       systemIcon: 'arrow.down.to.line',
       action: () => {
-        console.log('Saved!');
+        downloadAndSaveImage(imageUrl!);
       },
     },
     {
       title: 'Share',
       systemIcon: 'square.and.arrow.up',
       action: () => {
-        console.log('Shared!');
+        shareImage(imageUrl!);
       },
     },
   ];
