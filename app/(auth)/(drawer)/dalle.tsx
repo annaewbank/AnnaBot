@@ -30,7 +30,7 @@ const dummyMessages = [
 ];
 
 const Page = () => {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>(dummyMessages);
   const [working, setWorking] = useState<boolean>(false);
 
   // MMKV / API Check Start
