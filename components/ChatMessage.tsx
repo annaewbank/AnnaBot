@@ -5,6 +5,7 @@ import {
 } from '@/app/utils/ImageOptions';
 import { Message, Role } from '@/app/utils/Interfaces';
 import Colors from '@/constants/Colors';
+import { Link } from 'expo-router';
 import {
   View,
   Text,
@@ -73,12 +74,19 @@ const ChatMessage = ({
           {content === '' && imageUrl ? (
             <ContextMenu.Root>
               <ContextMenu.Trigger>
-                <Pressable>
-                  <Image
-                    source={{ uri: imageUrl }}
-                    style={styles.previewImage}
-                  />
-                </Pressable>
+                <Link
+                  href={`/(auth)/(modal)/${encodeURIComponent(
+                    imageUrl
+                  )}?prompt=${encodeURIComponent(prompt!)}`}
+                  asChild
+                >
+                  <Pressable>
+                    <Image
+                      source={{ uri: imageUrl }}
+                      style={styles.previewImage}
+                    />
+                  </Pressable>
+                </Link>
               </ContextMenu.Trigger>
               <ContextMenu.Content>
                 {contextItems.map((item) => (
