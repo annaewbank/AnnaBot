@@ -1,8 +1,11 @@
 import Colors from '@/constants/Colors';
 import { useLocalSearchParams } from 'expo-router';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ImageZoom } from '@likashefqet/react-native-image-zoom';
+import { BlurView } from 'expo-blur';
+import { Ionicons, Octicons } from '@expo/vector-icons';
+import { downloadAndSaveImage, shareImage } from '@/app/utils/ImageOptions';
 
 const Page = () => {
   const { url, prompt } = useLocalSearchParams<{
@@ -29,6 +32,42 @@ const Page = () => {
         style={styles.image}
         resizeMode="contain"
       />
+
+      {/* Bottom bar: */}
+      <BlurView
+        intensity={95}
+        tint="dark"
+        style={[styles.blurView, { paddingBottom: bottom }]}
+      >
+        <View style={styles.row}>
+          <TouchableOpacity style={{ alignItems: 'center' }}>
+            <Ionicons
+              name="chatbubble-ellipses-outline"
+              size={24}
+              color="white"
+            />
+            <Text style={styles.btnText}>Edit</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={{ alignItems: 'center' }}>
+            <Ionicons name="brush-outline" size={24} color="white" />
+            <Text style={styles.btnText}>Select</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{ alignItems: 'center' }}
+            onPress={() => downloadAndSaveImage(url!)}
+          >
+            <Octicons name="download" size={24} color="white" />
+            <Text style={styles.btnText}>Save</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{ alignItems: 'center' }}
+            onPress={() => shareImage(url!)}
+          >
+            <Octicons name="share" size={24} color="white" />
+            <Text style={styles.btnText}>Share</Text>
+          </TouchableOpacity>
+        </View>
+      </BlurView>
     </View>
   );
 };
@@ -40,7 +79,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#000',
   },
-  blurview: {
+  blurView: {
     width: '100%',
     position: 'absolute',
     bottom: 0,
