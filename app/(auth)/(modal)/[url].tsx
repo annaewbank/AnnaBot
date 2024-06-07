@@ -1,11 +1,21 @@
 import Colors from '@/constants/Colors';
-import { useLocalSearchParams } from 'expo-router';
+import { Stack, useLocalSearchParams } from 'expo-router';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ImageZoom } from '@likashefqet/react-native-image-zoom';
 import { BlurView } from 'expo-blur';
 import { Ionicons, Octicons } from '@expo/vector-icons';
 import { downloadAndSaveImage, shareImage } from '@/app/utils/ImageOptions';
+import DropDownMenu from '@/components/DropDownMenu';
+import Toast from 'react-native-root-toast';
+import { RootSiblingParent } from 'react-native-root-siblings';
+import {
+  BottomSheetModal,
+  BottomSheetModalProvider,
+  BottomSheetScrollView,
+} from '@gorhom/bottom-sheet';
+import * as Clipboard from 'expo-clipboard';
+import { useCallback, useMemo, useRef } from 'react';
 
 const Page = () => {
   const { url, prompt } = useLocalSearchParams<{
@@ -15,60 +25,111 @@ const Page = () => {
 
   const { bottom } = useSafeAreaInsets();
 
+  // Bottom sheet modal config:
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+  const snapPoints = useMemo(() => ['50%'], []);
+  const handlePresentModalPress = useCallback(() => {
+    bottomSheetModalRef.current?.present();
+  }, []);
+  const handleCloseModalPress = useCallback(() => {
+    bottomSheetModalRef.current?.dismiss();
+  }, []);
+
   const onCopyPrompt = () => {
-    console.log('Copied prompt');
+    // Copy prompt to clipboard:
+    Clipboard.setStringAsync(prompt!);
+
+    // Show toast notification:
+    Toast.show('Prompt copied to clipboard', {
+      duration: Toast.durations.SHORT,
+      position: Toast.positions.CENTER,
+      shadow: true,
+      animation: true,
+      hideOnPress: true,
+      delay: 0,
+    });
   };
 
   return (
-    <View style={styles.container}>
-      <ImageZoom
-        uri={url}
-        minScale={0.5}
-        maxScale={5}
-        minPanPointers={1}
-        doubleTapScale={2}
-        isSingleTapEnabled
-        isDoubleTapEnabled
-        style={styles.image}
-        resizeMode="contain"
-      />
+    <RootSiblingParent>
+      <BottomSheetModalProvider>
+        <View style={styles.container}>
+          <Stack.Screen
+            options={{
+              headerRight: () => (
+                <DropDownMenu
+                  items={[
+                    { key: 1, title: 'View prompt', icon: 'info.circle' },
+                    {
+                      key: 2,
+                      title: 'Learn more',
+                      icon: 'questionmark.circle',
+                    },
+                  ]}
+                  onSelect={handlePresentModalPress}
+                />
+              ),
+            }}
+          />
 
-      {/* Bottom bar: */}
-      <BlurView
-        intensity={95}
-        tint="dark"
-        style={[styles.blurView, { paddingBottom: bottom }]}
-      >
-        <View style={styles.row}>
-          <TouchableOpacity style={{ alignItems: 'center' }}>
-            <Ionicons
-              name="chatbubble-ellipses-outline"
-              size={24}
-              color="white"
-            />
-            <Text style={styles.btnText}>Edit</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={{ alignItems: 'center' }}>
-            <Ionicons name="brush-outline" size={24} color="white" />
-            <Text style={styles.btnText}>Select</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={{ alignItems: 'center' }}
-            onPress={() => downloadAndSaveImage(url!)}
+          <ImageZoom
+            uri={url}
+            minScale={0.5}
+            maxScale={5}
+            minPanPointers={1}
+            doubleTapScale={2}
+            isSingleTapEnabled
+            isDoubleTapEnabled
+            style={styles.image}
+            resizeMode="contain"
+          />
+
+          {/* Bottom bar: */}
+          <BlurView
+            intensity={95}
+            tint="dark"
+            style={[styles.blurView, { paddingBottom: bottom }]}
           >
-            <Octicons name="download" size={24} color="white" />
-            <Text style={styles.btnText}>Save</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={{ alignItems: 'center' }}
-            onPress={() => shareImage(url!)}
-          >
-            <Octicons name="share" size={24} color="white" />
-            <Text style={styles.btnText}>Share</Text>
-          </TouchableOpacity>
+            <View style={styles.row}>
+              <TouchableOpacity style={{ alignItems: 'center' }}>
+                <Ionicons
+                  name="chatbubble-ellipses-outline"
+                  size={24}
+                  color="white"
+                />
+                <Text style={styles.btnText}>Edit</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={{ alignItems: 'center' }}>
+                <Ionicons name="brush-outline" size={24} color="white" />
+                <Text style={styles.btnText}>Select</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={{ alignItems: 'center' }}
+                onPress={() => downloadAndSaveImage(url!)}
+              >
+                <Octicons name="download" size={24} color="white" />
+                <Text style={styles.btnText}>Save</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={{ alignItems: 'center' }}
+                onPress={() => shareImage(url!)}
+              >
+                <Octicons name="share" size={24} color="white" />
+                <Text style={styles.btnText}>Share</Text>
+              </TouchableOpacity>
+            </View>
+          </BlurView>
         </View>
-      </BlurView>
-    </View>
+
+        <BottomSheetModal
+          ref={bottomSheetModalRef}
+          index={0}
+          snapPoints={snapPoints}
+        >
+          <Text>TEST</Text>
+        </BottomSheetModal>
+      </BottomSheetModalProvider>
+    </RootSiblingParent>
   );
 };
 

@@ -1,7 +1,6 @@
 import Colors from '@/constants/Colors';
-import { Ionicons } from '@expo/vector-icons';
 import { View, Text } from 'react-native';
-import * as DropDownMenu from 'zeego/dropdown-menu';
+import * as DropdownMenu from 'zeego/dropdown-menu';
 
 // Define prop types:
 export type HeaderDropDownProps = {
@@ -18,8 +17,8 @@ const HeaderDropDown = ({
   items,
 }: HeaderDropDownProps) => {
   return (
-    <DropDownMenu.Root>
-      <DropDownMenu.Trigger>
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 7 }}>
           <Text style={{ fontWeight: 500, fontSize: 16 }}>{title}</Text>
           {selected && (
@@ -30,22 +29,21 @@ const HeaderDropDown = ({
             </Text>
           )}
         </View>
-        {/* <Ionicons name="ellipsis-horizontal" size={24} color={'#fff'} /> */}
-      </DropDownMenu.Trigger>
-      <DropDownMenu.Content>
+      </DropdownMenu.Trigger>
+      <DropdownMenu.Content>
         {items.map((item) => (
-          <DropDownMenu.Item key={item.key} onSelect={() => onSelect(item.key)}>
-            <DropDownMenu.ItemTitle>{item.title}</DropDownMenu.ItemTitle>
-            <DropDownMenu.ItemIcon
+          <DropdownMenu.Item key={item.key} onSelect={() => onSelect(item.key)}>
+            <DropdownMenu.ItemTitle>{item.title}</DropdownMenu.ItemTitle>
+            <DropdownMenu.ItemIcon
               ios={{
                 name: item.icon,
                 pointSize: 18,
               }}
             />
-          </DropDownMenu.Item>
+          </DropdownMenu.Item>
         ))}
-      </DropDownMenu.Content>
-    </DropDownMenu.Root>
+      </DropdownMenu.Content>
+    </DropdownMenu.Root>
   );
 };
 
