@@ -1,6 +1,12 @@
 import Colors from '@/constants/Colors';
 import { Stack, useLocalSearchParams } from 'expo-router';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Pressable,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ImageZoom } from '@likashefqet/react-native-image-zoom';
 import { BlurView } from 'expo-blur';
@@ -16,6 +22,7 @@ import {
 } from '@gorhom/bottom-sheet';
 import * as Clipboard from 'expo-clipboard';
 import { useCallback, useMemo, useRef } from 'react';
+import { defaultStyles } from '@/constants/Styles';
 
 const Page = () => {
   const { url, prompt } = useLocalSearchParams<{
@@ -42,7 +49,7 @@ const Page = () => {
     // Show toast notification:
     Toast.show('Prompt copied to clipboard', {
       duration: Toast.durations.SHORT,
-      position: Toast.positions.CENTER,
+      position: Toast.positions.TOP,
       shadow: true,
       animation: true,
       hideOnPress: true,
@@ -54,6 +61,7 @@ const Page = () => {
     <RootSiblingParent>
       <BottomSheetModalProvider>
         <View style={styles.container}>
+          {/* Stack screen config: */}
           <Stack.Screen
             options={{
               headerRight: () => (
@@ -72,6 +80,7 @@ const Page = () => {
             }}
           />
 
+          {/* Image zoom: */}
           <ImageZoom
             uri={url}
             minScale={0.5}
@@ -121,12 +130,50 @@ const Page = () => {
           </BlurView>
         </View>
 
+        {/* Bottom sheet modal: */}
         <BottomSheetModal
           ref={bottomSheetModalRef}
           index={0}
           snapPoints={snapPoints}
+          backgroundStyle={{ backgroundColor: Colors.grey }}
+          handleIndicatorStyle={{ backgroundColor: Colors.greyLight }}
         >
-          <Text>TEST</Text>
+          <View style={[styles.modalContainer, { paddingBottom: bottom }]}>
+            <BottomSheetScrollView>
+              <View>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                  }}
+                >
+                  <Text style={styles.titleText}>Prompt</Text>
+                  <Pressable
+                    onPress={handleCloseModalPress}
+                    style={styles.closeBtn}
+                  >
+                    <Ionicons
+                      name="close-outline"
+                      size={24}
+                      color={Colors.greyLight}
+                    />
+                  </Pressable>
+                </View>
+
+                <Text style={styles.promptText}>{prompt}</Text>
+              </View>
+            </BottomSheetScrollView>
+
+            <TouchableOpacity
+              style={[
+                defaultStyles.btn,
+                { backgroundColor: '#fff', marginTop: 16 },
+              ]}
+              onPress={onCopyPrompt}
+            >
+              <Text style={styles.buttonText}>Copy</Text>
+            </TouchableOpacity>
+          </View>
         </BottomSheetModal>
       </BottomSheetModalProvider>
     </RootSiblingParent>
