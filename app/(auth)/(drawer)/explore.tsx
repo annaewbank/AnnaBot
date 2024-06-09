@@ -14,7 +14,11 @@ import {
   getHeaderTitle,
   useHeaderHeight,
 } from '@react-navigation/elements';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { createShimmerPlaceholder } from 'react-native-shimmer-placeholder';
+import { LinearGradient } from 'expo-linear-gradient';
+import React from 'react';
+import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
 const sections = [
   { title: 'Top Picks', label: 'Curated top picks from this week' },
@@ -75,9 +79,18 @@ const apps = [
   },
 ];
 
+const ShimmerPlaceholder = createShimmerPlaceholder(LinearGradient);
+
 const Page = () => {
   const headerHeight = useHeaderHeight();
   const [selected, setSelected] = useState(sections[0]);
+  const [loading, setLoading] = useState(false);
+
+  // Use Effect to mimic API call delay:
+  useEffect(() => {
+    setLoading(true);
+    setTimeout(() => setLoading(false), 2000);
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -143,9 +156,22 @@ const Page = () => {
       />
 
       {/* Content: */}
-      <ScrollView
-        contentContainerStyle={{ paddingTop: headerHeight }}
-      ></ScrollView>
+      <ScrollView contentContainerStyle={{ paddingTop: headerHeight }}>
+        {sections.map((section, index) => (
+          <React.Fragment key={index}>
+            {selected === section && (
+              <Animated.View
+                entering={FadeIn.duration(600).delay(400)}
+                exiting={FadeOut.duration(400)}
+                style={styles.section}
+              >
+                <Text style={styles.title}>{section.title}</Text>
+                <Text style={styles.label}>{section.label}</Text>
+              </Animated.View>
+            )}
+          </React.Fragment>
+        ))}
+      </ScrollView>
     </View>
   );
 };
