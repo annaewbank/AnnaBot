@@ -8,6 +8,7 @@ import {
   ScrollView,
   Text,
   TouchableOpacity,
+  Image,
 } from 'react-native';
 import {
   Header,
@@ -165,8 +166,60 @@ const Page = () => {
                 exiting={FadeOut.duration(400)}
                 style={styles.section}
               >
-                <Text style={styles.title}>{section.title}</Text>
-                <Text style={styles.label}>{section.label}</Text>
+                <ShimmerPlaceholder width={160} height={20} visible={!loading}>
+                  <Text style={styles.title}>{section.title}</Text>
+                </ShimmerPlaceholder>
+
+                <ShimmerPlaceholder
+                  width={280}
+                  height={20}
+                  visible={!loading}
+                  shimmerStyle={{ marginVertical: 10 }}
+                >
+                  <Text style={styles.label}>{section.label}</Text>
+                </ShimmerPlaceholder>
+
+                {apps.map((app, index) => (
+                  <View key={index} style={styles.card}>
+                    <ShimmerPlaceholder
+                      width={60}
+                      height={60}
+                      visible={!loading}
+                      shimmerStyle={{ borderRadius: 30 }}
+                    >
+                      <Image
+                        source={{ uri: app.image }}
+                        style={styles.cardImage}
+                      />
+                    </ShimmerPlaceholder>
+
+                    <View style={{ flexShrink: 1, gap: 4 }}>
+                      <ShimmerPlaceholder
+                        width={160}
+                        height={20}
+                        visible={!loading}
+                      >
+                        <Text style={styles.cardTitle}>{app.title}</Text>
+                      </ShimmerPlaceholder>
+
+                      <ShimmerPlaceholder
+                        width={160}
+                        height={20}
+                        visible={!loading}
+                      >
+                        <Text style={styles.cardDesc}>{app.description}</Text>
+                      </ShimmerPlaceholder>
+
+                      <ShimmerPlaceholder
+                        width={250}
+                        height={20}
+                        visible={!loading}
+                      >
+                        <Text style={styles.cardAuthor}>{app.author}</Text>
+                      </ShimmerPlaceholder>
+                    </View>
+                  </View>
+                ))}
               </Animated.View>
             )}
           </React.Fragment>
@@ -226,7 +279,7 @@ const styles = StyleSheet.create({
   cardImage: {
     width: 60,
     height: 60,
-    borderRadius: 40,
+    borderRadius: 30,
   },
   cardTitle: {
     fontSize: 16,
