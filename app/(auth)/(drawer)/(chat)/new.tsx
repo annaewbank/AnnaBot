@@ -4,7 +4,7 @@ import MessageIdeas from '@/components/MessageIdeas';
 import MessageInput from '@/components/MessageInput';
 import { defaultStyles } from '@/constants/Styles';
 import { Redirect, Stack } from 'expo-router';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   View,
   KeyboardAvoidingView,
@@ -17,6 +17,8 @@ import ChatMessage from '@/components/ChatMessage';
 import { useMMKVString } from 'react-native-mmkv';
 import { Storage } from '@/app/utils/Storage';
 import OpenAI from 'react-native-openai';
+import { useSQLiteContext } from 'expo-sqlite';
+import { addChat, addMessage } from '@/app/utils/Database';
 
 // Everything inside (auth) is protected by Clerk
 // Check occurs in root _layout.tsx useEffect
@@ -28,6 +30,17 @@ const Page = () => {
   const [key, setKey] = useMMKVString('apiKey', Storage);
   const [organization, setOrganization] = useMMKVString('org', Storage);
   const [botVersion, setBotVersion] = useMMKVString('botVersion', Storage);
+
+  // Get the database
+  const db = useSQLiteContext();
+
+  // Custom setChatID function enable useEffect to access updated ChatID state
+  const [chatID, _setChatID] = useState<string>('');
+  const chatIDRef = useRef(chatID);
+  function setChatID(id: string) {
+    chatIDRef.current = id;
+    _setChatID(id);
+  }
 
   if (!key || key === '' || !organization || organization === '') {
     return <Redirect href={'/(auth)/(modal)/settings'} />;
@@ -50,6 +63,12 @@ const Page = () => {
   const getCompletion = async (message: string) => {
     if (messages.length === 0) {
       // Create chat and store in DB
+      const result = await addChat(db, message);
+
+      const chatID = result.lastInsertRowId;
+      setChatID(chatID.toString());
+
+      addMessage(db, chatID, { content: message, role: Role.User });
     }
 
     // Add user message to chat
@@ -84,8 +103,13 @@ const Page = () => {
         }
 
         // If end of stream, save to DB
-        if (payload.choices[0]?.finishReadson) {
-          console.log('End of stream');
+        if (payload.choices[0]?.finishReason) {
+          // console.log('End of stream');
+          // console.log('Save bot message to: ', chatIDRef.current);
+          addMessage(db, parseInt(chatIDRef.current), {
+            content: messages[messages.length - 1].content,
+            role: Role.Bot,
+          });
         }
 
         return messages;
