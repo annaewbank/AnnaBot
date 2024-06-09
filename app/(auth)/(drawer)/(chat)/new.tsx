@@ -21,18 +21,6 @@ import OpenAI from 'react-native-openai';
 // Everything inside (auth) is protected by Clerk
 // Check occurs in root _layout.tsx useEffect
 
-const DUMMY_MESSAGES: Message[] = [
-  {
-    content: 'Hello, how can I help you today?',
-    role: Role.Bot,
-  },
-  {
-    content:
-      'I need help with my React Native app. Please can you explain how stack navigation works?',
-    role: Role.User,
-  },
-];
-
 const Page = () => {
   const [messages, setMessages] = useState<Message[]>([]);
 
