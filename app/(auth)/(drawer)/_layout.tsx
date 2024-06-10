@@ -6,6 +6,7 @@ import {
   useWindowDimensions,
   Text,
   Keyboard,
+  Alert,
 } from 'react-native';
 import { Drawer } from 'expo-router/drawer';
 import { Link, useNavigation, useRouter } from 'expo-router';
@@ -21,9 +22,10 @@ import {
 } from '@react-navigation/drawer';
 import { TextInput } from 'react-native-gesture-handler';
 import { useEffect, useState } from 'react';
-import { getChats } from '@/app/utils/Database';
+import { deleteChat, getChats, renameChat } from '@/app/utils/Database';
 import { Chat } from '@/app/utils/Interfaces';
 import { useSQLiteContext } from 'expo-sqlite';
+import * as ContextMenu from 'zeego/context-menu';
 
 // This file defines the drawer content
 
@@ -47,6 +49,32 @@ export const CustomDrawerContent = (props: any) => {
   const loadChats = async () => {
     const result = await getChats(db);
     setMessageHistory(result);
+  };
+
+  const onRenameChat = async (id: number) => {
+    Alert.prompt('Rename Chat', 'Enter a new name', async (newName) => {
+      if (newName) {
+        await renameChat(db, id, newName);
+        loadChats();
+      }
+    });
+  };
+
+  const onDeleteChat = async (id: number) => {
+    Alert.alert('Delete Chat', 'Are you sure you want to delete this chat?', [
+      {
+        text: 'Cancel',
+        style: 'cancel',
+      },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: async () => {
+          await deleteChat(db, id);
+          loadChats();
+        },
+      },
+    ]);
   };
 
   return (
@@ -75,12 +103,42 @@ export const CustomDrawerContent = (props: any) => {
       >
         <DrawerItemList {...props} />
         {messageHistory.map((chat) => (
-          <DrawerItem
-            key={chat.id}
-            label={chat.title}
-            onPress={() => router.push(`/(auth)/(drawer)/(chat)/${chat.id}`)}
-            inactiveTintColor="#000"
-          />
+          <ContextMenu.Root key={chat.id}>
+            <ContextMenu.Trigger>
+              <DrawerItem
+                label={chat.title}
+                onPress={() =>
+                  router.push(`/(auth)/(drawer)/(chat)/${chat.id}`)
+                }
+                inactiveTintColor="#000"
+              />
+            </ContextMenu.Trigger>
+            <ContextMenu.Content>
+              <ContextMenu.Item
+                key={'rename'}
+                onSelect={() => onRenameChat(chat.id)}
+              >
+                <ContextMenu.ItemTitle>Rename</ContextMenu.ItemTitle>
+                <ContextMenu.ItemIcon
+                  ios={{
+                    name: 'pencil',
+                  }}
+                />
+              </ContextMenu.Item>
+              <ContextMenu.Item
+                key={'delete'}
+                onSelect={() => onDeleteChat(chat.id)}
+                destructive
+              >
+                <ContextMenu.ItemTitle>Delete</ContextMenu.ItemTitle>
+                <ContextMenu.ItemIcon
+                  ios={{
+                    name: 'trash',
+                  }}
+                />
+              </ContextMenu.Item>
+            </ContextMenu.Content>
+          </ContextMenu.Root>
         ))}
       </DrawerContentScrollView>
 
