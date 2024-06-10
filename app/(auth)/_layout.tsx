@@ -2,11 +2,7 @@ import Colors from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useRouter } from 'expo-router';
 import { TouchableOpacity } from 'react-native';
-import {
-  SQLiteProvider,
-  useSQLiteContext,
-  type SQLiteDatabase,
-} from 'expo-sqlite';
+import { SQLiteProvider } from 'expo-sqlite';
 import { migrateDbIfNeeded } from '@/app/utils/Database';
 
 const Layout = () => {
