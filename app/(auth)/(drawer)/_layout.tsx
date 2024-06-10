@@ -46,8 +46,6 @@ export const CustomDrawerContent = (props: any) => {
 
   const loadChats = async () => {
     const result = await getChats(db);
-    console.log('Message history: ', result);
-
     setMessageHistory(result);
   };
 

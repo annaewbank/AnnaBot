@@ -62,10 +62,8 @@ const ChatPage = () => {
   // Load chat based on ID
   useEffect(() => {
     if (id) {
-      console.log('Chat ID: ', id);
       getMessages(db, parseInt(id)).then((result) => {
         setMessages(result);
-        console.log('Messages: ', result);
       });
     }
   }, [id]);

@@ -3,7 +3,7 @@ import * as FileSystem from 'expo-file-system';
 import { Chat, Message, Role } from '@/app/utils/Interfaces';
 
 export async function migrateDbIfNeeded(db: SQLiteDatabase) {
-  console.log(FileSystem.documentDirectory);
+  // console.log(FileSystem.documentDirectory);
 
   const DATABASE_VERSION = 1;
 
@@ -16,8 +16,7 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
   let currentDbVersion = result?.user_version ?? 0;
 
   if (currentDbVersion >= DATABASE_VERSION) {
-    console.log('Database is up to date');
-
+    // Database is up to date
     return;
   }
 
@@ -41,8 +40,6 @@ CREATE TABLE messages (
   FOREIGN KEY (chat_id) REFERENCES chats (id) ON DELETE CASCADE
 );
 `);
-
-    console.log(result);
 
     currentDbVersion = 1;
   }
