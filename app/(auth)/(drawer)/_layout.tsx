@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   useWindowDimensions,
   Text,
+  Keyboard,
 } from 'react-native';
 import { Drawer } from 'expo-router/drawer';
 import { Link, useNavigation } from 'expo-router';
@@ -15,8 +16,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   DrawerContentScrollView,
   DrawerItemList,
+  useDrawerStatus,
 } from '@react-navigation/drawer';
 import { TextInput } from 'react-native-gesture-handler';
+import { useEffect } from 'react';
 
 // This file defines the drawer content
 
@@ -24,6 +27,12 @@ import { TextInput } from 'react-native-gesture-handler';
 // New drawer items: search bar and user/settings
 export const CustomDrawerContent = (props: any) => {
   const { top, bottom } = useSafeAreaInsets();
+
+  // Hide keyboard when drawer is open
+  const isDrawerOpen = useDrawerStatus() === 'open';
+  useEffect(() => {
+    Keyboard.dismiss();
+  }, [isDrawerOpen]);
 
   return (
     <View style={{ flex: 1, marginTop: top }}>
