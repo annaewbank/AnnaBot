@@ -8,18 +8,22 @@ import {
   Keyboard,
 } from 'react-native';
 import { Drawer } from 'expo-router/drawer';
-import { Link, useNavigation } from 'expo-router';
+import { Link, useNavigation, useRouter } from 'expo-router';
 import { FontAwesome6, Ionicons } from '@expo/vector-icons';
 import Colors from '@/constants/Colors';
-import { DrawerActions } from '@react-navigation/native';
+import { DrawerActions, useRoute } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   DrawerContentScrollView,
+  DrawerItem,
   DrawerItemList,
   useDrawerStatus,
 } from '@react-navigation/drawer';
 import { TextInput } from 'react-native-gesture-handler';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { getChats } from '@/app/utils/Database';
+import { Chat } from '@/app/utils/Interfaces';
+import { useSQLiteContext } from 'expo-sqlite';
 
 // This file defines the drawer content
 
@@ -27,12 +31,25 @@ import { useEffect } from 'react';
 // New drawer items: search bar and user/settings
 export const CustomDrawerContent = (props: any) => {
   const { top, bottom } = useSafeAreaInsets();
+  const db = useSQLiteContext();
+  const router = useRouter();
+  const [messageHistory, setMessageHistory] = useState<Chat[]>([]);
 
-  // Hide keyboard when drawer is open
+  // Load chats and hide keyboard when drawer is open
   const isDrawerOpen = useDrawerStatus() === 'open';
   useEffect(() => {
-    Keyboard.dismiss();
+    if (isDrawerOpen) {
+      loadChats();
+      Keyboard.dismiss();
+    }
   }, [isDrawerOpen]);
+
+  const loadChats = async () => {
+    const result = await getChats(db);
+    console.log('Message history: ', result);
+
+    setMessageHistory(result);
+  };
 
   return (
     <View style={{ flex: 1, marginTop: top }}>
@@ -59,6 +76,14 @@ export const CustomDrawerContent = (props: any) => {
         contentContainerStyle={{ paddingTop: 0 }}
       >
         <DrawerItemList {...props} />
+        {messageHistory.map((chat) => (
+          <DrawerItem
+            key={chat.id}
+            label={chat.title}
+            onPress={() => router.push(`/(auth)/(drawer)/(chat)/${chat.id}`)}
+            inactiveTintColor="#000"
+          />
+        ))}
       </DrawerContentScrollView>
 
       {/* Add user/settings */}
@@ -127,6 +152,25 @@ const Layout = () => {
               />
             </View>
           ),
+          headerRight: () => (
+            <Link href={'/(auth)/(drawer)/(chat)/new'} push asChild>
+              <TouchableOpacity>
+                <Ionicons
+                  name="create-outline"
+                  size={24}
+                  color={Colors.grey}
+                  style={{ marginRight: 16 }}
+                />
+              </TouchableOpacity>
+            </Link>
+          ),
+        }}
+      />
+
+      <Drawer.Screen
+        name="(chat)/[id]"
+        options={{
+          drawerItemStyle: { display: 'none' },
           headerRight: () => (
             <Link href={'/(auth)/(drawer)/(chat)/new'} push asChild>
               <TouchableOpacity>
